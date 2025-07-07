@@ -163,3 +163,4 @@ C:\Users\Achaasa\Documents\coding projects\procurement\procurementsystem\bin\Deb
 C:\Users\Achaasa\Documents\coding projects\procurement\procurementsystem\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Abstractions.dll
 C:\Users\Achaasa\Documents\coding projects\procurement\procurementsystem\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Physical.dll
 C:\Users\Achaasa\Documents\coding projects\procurement\procurementsystem\bin\Debug\net9.0\Microsoft.Extensions.FileSystemGlobbing.dll
+C:\Users\Achaasa\Documents\coding projects\procurement\procurementsystem\obj\Debug\net9.0\procurementsystem.sourcelink.json

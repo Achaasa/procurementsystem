@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using procurementsystem.IService;
@@ -80,12 +81,18 @@ namespace procurementsystem.controllers
 
         }
         [Authorize]
-        [HttpPut("change-password/{userId}")]
-        public async Task<ActionResult<bool>> ChangePassword(Guid userId, ChangePasswordDto changePasswordDto)
+        [HttpPut("change-password/")]
+        public async Task<ActionResult<bool>> ChangePassword( ChangePasswordDto changePasswordDto)
         {
             try
             {
-                var result = await _authService.ChangePasswordAsync(userId, changePasswordDto);
+                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var parsedUserId))
+                {
+                    return Unauthorized("User ID not found or invalid.");
+                }
+
+                var result = await _authService.ChangePasswordAsync(parsedUserId, changePasswordDto);
                 if (!result)
                 {
                     return NotFound("User not found or password change failed");
