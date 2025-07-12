@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using procurementsystem.enums;
+using procurementsystem.models.ProcurementHistory;
 using procurementsystem.models.ProcurementItem;
 
 namespace procurementsystem.IService
@@ -22,5 +23,7 @@ namespace procurementsystem.IService
         Task<List<ProcurementItemDto>> GetItemsByStageAndStatusAsync(StageCategory stage, StageStatus status);
 
         Task<List<ProcurementItemDto>> GetItemsByDepartmentAsync(string department);
+        Task<List<ProcurementHistoryDto>> GetProcurmentHistoryAsync(Guid procurementItemId);
+        Task<List<UpdateStageDto>> ChangeStageAsync(Guid procurementItemId, UpdateStageDto updateStageDto);
     }
 }

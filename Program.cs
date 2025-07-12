@@ -18,6 +18,7 @@ var smtpSettings = new SmtpSettings();
 builder.Configuration.Bind("SMTP", smtpSettings);
 builder.Services.AddSingleton<IEmailService>(new EmailService(smtpSettings));
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddScoped<IProcurementItem,ProcurementItemService>();
 
 builder.Services.AddScoped<IUser, UserService>();
 builder.Services.AddScoped<IAuth, AuthService>();
@@ -42,6 +43,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
 // Build connection string from environment variables
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? throw new InvalidOperationException("DB_HOST not found in environment variables. Please check your .env file.");
@@ -83,6 +85,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+     app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseMiddleware<ErrorHandler>();
