@@ -24,5 +24,6 @@ namespace procurementsystem.Entities
 
         public Guid? UpdatedById { get; set; }
         public User? UpdatedBy { get; set; }
+        public bool delFlag { get; set; } = false;
     }
 }

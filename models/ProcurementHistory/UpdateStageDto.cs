@@ -8,8 +8,8 @@ namespace procurementsystem.models.ProcurementHistory
 {
     public class UpdateStageDto
 {
-    public StageCategory Stage { get; set; }
-    public StageStatus Status { get; set; }
+    public StageCategory? Stage { get; set; }
+    public StageStatus? Status { get; set; }
     public string? Comments { get; set; } = string.Empty;
 }
 

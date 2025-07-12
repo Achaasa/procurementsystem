@@ -12,8 +12,6 @@ namespace procurementsystem.models.ProcurementItem
         public string? Description { get; set; }
         public string? Department { get; set; }
         public DateTime? DateRecieved { get; set; }
-        public StageCategory? Stage { get; set; }
-        public StageStatus? Status { get; set; }
-        public Guid? UpdatedById { get; set; }
+       public Guid? UpdatedById { get; set; }
     }
 }
