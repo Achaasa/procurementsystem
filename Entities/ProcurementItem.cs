@@ -13,6 +13,7 @@ namespace procurementsystem.Entities
         public string Description { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public DateTime DateRecieved { get; set; }
         public StageCategory Stage { get; set; } = StageCategory.INVITATION;
         public StageStatus Status { get; set; } = StageStatus.PENDING;
