@@ -17,18 +17,19 @@ namespace procurementsystem.controllers
         private readonly IProcurementItem _procurementItemService;
         public ProcurementItem(IProcurementItem procurementItemService)
         {
-            _procurementItemService=procurementItemService;
+            _procurementItemService = procurementItemService;
         }
 
         [HttpPost("add")]
-        public async Task<ActionResult<ProcurementItemDto>> AddProcurementItem([FromBody] CreateProcurementItemDto procurementItemDto )
+        public async Task<ActionResult<ProcurementItemDto>> AddProcurementItem([FromBody] CreateProcurementItemDto procurementItemDto)
         {
             var procurementItem = await _procurementItemService.CreateProcurementItemAsync(procurementItemDto);
             return Ok(procurementItem);
         }
 
         [HttpPut("delete/{id}")]
-        public async Task<ActionResult<bool>> DeleteProcurement([FromBody] Guid id){
+        public async Task<ActionResult<bool>> DeleteProcurement([FromBody] Guid id)
+        {
             await _procurementItemService.DeleteProcurementItemAsync(id);
             return Ok(new { message = "Successfully deleted" });
 
@@ -41,18 +42,13 @@ namespace procurementsystem.controllers
             return Ok(items);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         public async Task<ActionResult<ProcurementItemDto>> GetById(Guid id)
         {
-            try
-            {
-                var item = await _procurementItemService.GetProcurementItemByIdAsync(id);
-                return Ok(item);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+
+            var item = await _procurementItemService.GetProcurementItemByIdAsync(id);
+            return Ok(item);
+
         }
 
         [HttpGet("department/{department}")]
@@ -78,18 +74,24 @@ namespace procurementsystem.controllers
             return Ok(updated);
         }
 
-        [HttpGet("{id}/history")]
+        [HttpGet("get/history/{id}")]
         public async Task<ActionResult<List<ProcurementHistoryDto>>> GetHistory(Guid id)
         {
-            try
-            {
-                var history = await _procurementItemService.GetProcurmentHistoryAsync(id);
-                return Ok(history);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+
+
+            var history = await _procurementItemService.GetProcurmentHistoryAsync(id);
+            return Ok(history);
+
+
+        }
+
+        [HttpPut("change-stage/{id}")]
+        public async Task<ActionResult<List<UpdateStageDto>>> ChangeStage(Guid id, [FromBody] UpdateStageDto updateStageDto)
+        {
+
+            var result = await _procurementItemService.ChangeStageAsync(id, updateStageDto);
+            return Ok(result);
+
         }
     }
 }

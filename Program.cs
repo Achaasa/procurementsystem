@@ -11,27 +11,27 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Load environment variables from .env file
-Env.Load();
 
+Env.Load();
 var smtpSettings = new SmtpSettings();
 builder.Configuration.Bind("SMTP", smtpSettings);
 builder.Services.AddSingleton<IEmailService>(new EmailService(smtpSettings));
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
-builder.Services.AddScoped<IProcurementItem,ProcurementItemService>();
+builder.Services.AddScoped<IProcurementItem, ProcurementItemService>();
 
 builder.Services.AddScoped<IUser, UserService>();
 builder.Services.AddScoped<IAuth, AuthService>();
 
-// Configure JWT settings from environment variables
+// Configure JWT settings from environment variables with better error handling
 var jwtSettings = new JwtSettings
 {
-    Secret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new InvalidOperationException("JWT_SECRET not found in environment variables. Please check your .env file."),
-    Issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? throw new InvalidOperationException("JWT_ISSUER not found in environment variables. Please check your .env file."),
-    Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? throw new InvalidOperationException("JWT_AUDIENCE not found in environment variables. Please check your .env file."),
-    ExpiryMinutes = int.Parse(Environment.GetEnvironmentVariable("JWT_EXPIRY_MINUTES") ?? "60")
+    Secret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? "fallback-secret-key-for-development",
+    Issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "MyProcurementSystem",
+    Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "MyProcurementSystemUsers",
+    ExpiryMinutes = int.TryParse(Environment.GetEnvironmentVariable("JWT_EXPIRY_MINUTES"), out var expiry) ? expiry : 60
 };
-builder.Services.Configure<JwtSettings>(options => 
+
+builder.Services.Configure<JwtSettings>(options =>
 {
     options.Secret = jwtSettings.Secret;
     options.Issuer = jwtSettings.Issuer;
@@ -45,14 +45,20 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
-// Build connection string from environment variables
-var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? throw new InvalidOperationException("DB_HOST not found in environment variables. Please check your .env file.");
+// Build connection string from environment variables with better error handling
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
 var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
-var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? throw new InvalidOperationException("DB_NAME not found in environment variables. Please check your .env file.");
-var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? throw new InvalidOperationException("DB_USER not found in environment variables. Please check your .env file.");
-var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? throw new InvalidOperationException("DB_PASSWORD not found in environment variables. Please check your .env file.");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 
-var connectionString = $"User Id={dbUser};Password={dbPassword};Server={dbHost};Port={dbPort};Database={dbName}";
+if (string.IsNullOrEmpty(dbHost) || string.IsNullOrEmpty(dbName) ||
+    string.IsNullOrEmpty(dbUser) || string.IsNullOrEmpty(dbPassword))
+{
+    throw new InvalidOperationException("Database environment variables are missing. Please check your environment configuration.");
+}
+
+var connectionString = $"User Id={dbUser};Password={dbPassword};Server={dbHost};Port={dbPort};Database={dbName};Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;";
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
@@ -85,7 +91,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-     app.UseSwagger();
+    app.UseSwagger();
     app.UseSwaggerUI();
 }
 
@@ -94,6 +100,12 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Add graceful shutdown
+app.Lifetime.ApplicationStopping.Register(() =>
+{
+    Console.WriteLine("Application is shutting down...");
+});
 
 app.Run();
 
