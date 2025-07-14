@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using procurementsystem.enums;
 using procurementsystem.IService;
@@ -19,7 +20,7 @@ namespace procurementsystem.controllers
         {
             _procurementItemService = procurementItemService;
         }
-
+        [Authorize(Roles = "ADMIN,SUPER_ADMIN")]
         [HttpPost("add")]
         public async Task<ActionResult<ProcurementItemDto>> AddProcurementItem([FromBody] CreateProcurementItemDto procurementItemDto)
         {
@@ -27,6 +28,7 @@ namespace procurementsystem.controllers
             return Ok(procurementItem);
         }
 
+        [Authorize(Roles = "ADMIN,SUPER_ADMIN")]
         [HttpPut("delete/{id}")]
         public async Task<ActionResult<bool>> DeleteProcurement([FromBody] Guid id)
         {
@@ -35,6 +37,7 @@ namespace procurementsystem.controllers
 
         }
 
+        [Authorize(Roles = "ADMIN,SUPER_ADMIN")]
         [HttpGet("all")]
         public async Task<ActionResult<List<ProcurementItemDto>>> GetAll()
         {
@@ -42,6 +45,7 @@ namespace procurementsystem.controllers
             return Ok(items);
         }
 
+        [Authorize(Roles = "ADMIN,SUPER_ADMIN")]
         [HttpGet("get/{id}")]
         public async Task<ActionResult<ProcurementItemDto>> GetById(Guid id)
         {
@@ -51,6 +55,7 @@ namespace procurementsystem.controllers
 
         }
 
+        [Authorize(Roles = "ADMIN,SUPER_ADMIN")]
         [HttpGet("department/{department}")]
         public async Task<ActionResult<List<ProcurementItemDto>>> GetByDepartment(string department)
         {
@@ -58,12 +63,14 @@ namespace procurementsystem.controllers
             return Ok(items);
         }
 
+        [Authorize(Roles = "ADMIN,SUPER_ADMIN")]
         [HttpGet("stage-status")]
         public async Task<ActionResult<List<ProcurementItemDto>>> GetByStageAndStatus([FromQuery] StageCategory stage, [FromQuery] StageStatus status)
         {
             var items = await _procurementItemService.GetItemsByStageAndStatusAsync(stage, status);
             return Ok(items);
         }
+        [Authorize(Roles = "ADMIN,SUPER_ADMIN")]
 
         [HttpPut("update/{id}")]
         public async Task<ActionResult<ProcurementItemDto>> Update(Guid id, [FromBody] UpdateProcurementItemDto updateDto)
@@ -73,6 +80,7 @@ namespace procurementsystem.controllers
                 return NotFound(new { message = "Item not found or update failed" });
             return Ok(updated);
         }
+        [Authorize(Roles = "ADMIN,SUPER_ADMIN")]
 
         [HttpGet("get/history/{id}")]
         public async Task<ActionResult<List<ProcurementHistoryDto>>> GetHistory(Guid id)
@@ -84,6 +92,7 @@ namespace procurementsystem.controllers
 
 
         }
+        [Authorize(Roles = "ADMIN,SUPER_ADMIN")]
 
         [HttpPut("change-stage/{id}")]
         public async Task<ActionResult<List<UpdateStageDto>>> ChangeStage(Guid id, [FromBody] UpdateStageDto updateStageDto)
