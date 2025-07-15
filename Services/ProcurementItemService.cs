@@ -12,6 +12,7 @@ using procurementsystem.models.ProcurementItem;
 using procurementsystem.enums;
 using AutoMapper;
 using procurementsystem.models.ProcurementHistory;
+using Microsoft.Extensions.Logging;
 
 namespace procurementsystem.Services
 {
@@ -19,10 +20,12 @@ namespace procurementsystem.Services
     {
         private readonly ApplicationDBContext _context;
         private readonly IMapper _mapper;
-        public ProcurementItemService(ApplicationDBContext context, IMapper mapper)
+        private readonly ILogger<ProcurementItemService> _logger;
+        public ProcurementItemService(ApplicationDBContext context, IMapper mapper, ILogger<ProcurementItemService> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<List<UpdateStageDto>> ChangeStageAsync(Guid procurementItemId, UpdateStageDto updateStageDto)
@@ -102,28 +105,57 @@ namespace procurementsystem.Services
 
         public async Task<List<ProcurementItemDto>> GetAllProcurementItemsAsync()
         {
-            var procurementItems = await _context.ProcurementItems.Where(p => p.delFlag == false).ToListAsync();
-            var procurementItemDtos = _mapper.Map<List<ProcurementItemDto>>(procurementItems);
-            return procurementItemDtos;
+            try
+            {
+                var procurementItems = await _context.ProcurementItems
+         .Include(p => p.CreatedBy)
+         .Include(p => p.UpdatedBy)
+         .Where(p => p.delFlag == false)
+         .ToListAsync();
+                var procurementItemDtos = _mapper.Map<List<ProcurementItemDto>>(procurementItems);
+                return procurementItemDtos;
+            }
+            catch (Npgsql.PostgresException ex)
+            {
+                _logger.LogError("PostgresException: {Message}\nDetail: {Detail}\nWhere: {Where}\nSqlState: {SqlState}\nStackTrace: {StackTrace}",
+                    ex.Message, ex.Detail, ex.Where, ex.SqlState, ex.StackTrace);
+                throw; // Optionally rethrow or handle as needed
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Exception: {Message}\nStackTrace: {StackTrace}", ex.Message, ex.StackTrace);
+                throw;
+            }
         }
 
         public async Task<List<ProcurementItemDto>> GetItemsByDepartmentAsync(string department)
         {
-            var procurementItems = await _context.ProcurementItems.Where(p => p.delFlag == false && p.Department == department).ToListAsync();
+            var procurementItems = await _context.ProcurementItems
+     .Include(p => p.CreatedBy)
+     .Include(p => p.UpdatedBy)
+     .Where(p => p.delFlag == false && p.Department == department)
+     .ToListAsync();
             var procurementItemDtos = _mapper.Map<List<ProcurementItemDto>>(procurementItems);
             return procurementItemDtos;
         }
 
         public async Task<List<ProcurementItemDto>> GetItemsByStageAndStatusAsync(StageCategory stage, StageStatus status)
         {
-            var procurementItems = await _context.ProcurementItems.Where(p => p.delFlag == false && p.Stage == stage && p.Status == status).ToListAsync();
+            var procurementItems = await _context.ProcurementItems
+    .Include(p => p.CreatedBy)
+    .Include(p => p.UpdatedBy)
+    .Where(p => p.delFlag == false && p.Stage == stage && p.Status == status)
+    .ToListAsync();
             var procurementItemDtos = _mapper.Map<List<ProcurementItemDto>>(procurementItems);
             return procurementItemDtos;
         }
 
         public async Task<ProcurementItemDto> GetProcurementItemByIdAsync(Guid id)
         {
-            var procurementItem = await _context.ProcurementItems.FindAsync(id);
+            var procurementItem = await _context.ProcurementItems
+        .Include(p => p.CreatedBy)
+        .Include(p => p.UpdatedBy)
+        .FirstOrDefaultAsync(p => p.Id == id);
             if (procurementItem == null)
             {
                 throw new Exception("Procurement item not found");
@@ -140,7 +172,10 @@ namespace procurementsystem.Services
                 throw new Exception("Procurement item not found");
             }
 
-            var procuementHistory = await _context.ProcurementHistories.Where(ph => ph.ProcurementItemId == procurementItemId && ph.ProcurementItem.delFlag == false).ToListAsync();
+            var procuementHistory = await _context.ProcurementHistories
+      .Include(ph => ph.UpdatedBy)
+      .Where(ph => ph.ProcurementItemId == procurementItemId && ph.ProcurementItem.delFlag == false)
+      .ToListAsync();
             var ProcurementHistoryDtos = _mapper.Map<List<ProcurementHistoryDto>>(procuementHistory);
             return ProcurementHistoryDtos;
 
