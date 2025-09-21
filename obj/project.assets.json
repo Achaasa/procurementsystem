@@ -9525,24 +9525,31 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Achaasa\\.nuget\\packages\\": {}
+    "C:\\Users\\DARKSABER\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Achaasa\\Documents\\coding projects\\procurement\\procurementsystem\\procurementsystem.csproj",
+      "projectUniqueName": "C:\\Users\\DARKSABER\\Documents\\coding projects\\procurement\\procurementsystem\\procurementsystem.csproj",
       "projectName": "procurementsystem",
-      "projectPath": "C:\\Users\\Achaasa\\Documents\\coding projects\\procurement\\procurementsystem\\procurementsystem.csproj",
-      "packagesPath": "C:\\Users\\Achaasa\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Achaasa\\Documents\\coding projects\\procurement\\procurementsystem\\obj\\",
+      "projectPath": "C:\\Users\\DARKSABER\\Documents\\coding projects\\procurement\\procurementsystem\\procurementsystem.csproj",
+      "packagesPath": "C:\\Users\\DARKSABER\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\DARKSABER\\Documents\\coding projects\\procurement\\procurementsystem\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Achaasa\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\DARKSABER\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -9663,7 +9670,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

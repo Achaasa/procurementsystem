@@ -32,6 +32,18 @@ var jwtSettings = new JwtSettings
     Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "MyProcurementSystemUsers",
     ExpiryMinutes = int.TryParse(Environment.GetEnvironmentVariable("JWT_EXPIRY_MINUTES"), out var expiry) ? expiry : 60
 };
+// configurecors
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontendOrigin", policy =>
+    {
+        policy.WithOrigins("http://localhost:8080") // Replace with your frontend origin
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 builder.Services.Configure<JwtSettings>(options =>
 {
@@ -128,6 +140,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ErrorHandler>();
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontendOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
